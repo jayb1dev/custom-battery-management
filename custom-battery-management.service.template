@@ -1,0 +1,15 @@
+# 
+# custom-battery-management
+#
+[Unit]
+Description=custom-battery-management
+
+[Service]
+ExecStartPre=rm -f __BASE_DIR__/battery.out.log && rm -f __BASE_DIR__/battery.err.log
+ExecStart=__BASE_DIR__/battery
+StandardOutput=file://__BASE_DIR__/battery.out.log
+StandardError=file://__BASE_DIR__/battery.err.log
+
+[Install]
+WantedBy=multi-user.target
+
