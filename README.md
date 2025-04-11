@@ -66,6 +66,10 @@ From within the cloned dir, as root run:
 ./install.sh
 ```
 
+or
 
+```
+sudo ./install.sh
+```
 
 

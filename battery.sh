@@ -10,6 +10,26 @@ LOW=20
 HIGH=90
 HIGH_CRITICAL=95
 
+#
+# Enable sound
+# Set this to "yes" or "no"
+#
+ENABLE_SOUND=yes
+
+#
+# Enable checking for a VPN. 
+#
+# If a vpn is running which would prevent communication with
+# the smart plug, this will stop the vpn before attempting power 
+# operations on the smart plug on your local LAN.
+#
+# If you do not have a vpn running, set this to "no"
+#
+ENABLE_VPN_CHECK=yes
+
+#
+# Path to sounds that can be played with pw-play
+#
 SOUND_PLUG=/usr/share/sounds/Yaru/stereo/power-plug.oga
 SOUND_UNPLUG=/usr/share/sounds/Yaru/stereo/power-unplug.oga
 
@@ -26,9 +46,11 @@ export XDG_RUNTIME_DIR=/run/user/1000
 # Play sound.
 #
 sound() {
-    pw-play $1
-    pw-play $1
-    pw-play $1
+    if [ "$ENABLE_SOUND" == "yes" ]; then
+        pw-play $1
+        pw-play $1
+        pw-play $1
+    fi
 }
 
 #
@@ -36,14 +58,18 @@ sound() {
 #
 power() {
 
-    #
-    # Get vpn pid and check if we need to stop the vpn.
-    #
-    vpn_pid=$(ps -ef | grep vpnagentd | grep -v grep | awk '{print $2}')
+    if [ "$ENABLE_VPN_CHECK" == "yes" ]; then
 
-    if [ "$vpn_pid" != "" ]; then
-        echo "Stopping vpn $vpn_pid ..."
-        kill -KILL $vpn_pid
+        #
+        # Get vpn pid and check if we need to stop the vpn.
+        #
+        vpn_pid=$(ps -ef | grep vpnagentd | grep -v grep | awk '{print $2}')
+
+        if [ "$vpn_pid" != "" ]; then
+            echo "Stopping vpn $vpn_pid ..."
+            kill -KILL $vpn_pid
+        fi
+
     fi
 
     if [ "$1" == "on" ]; then
@@ -57,9 +83,13 @@ power() {
 
 while [ 1 ]; do
 
+    #
+    # Default time to sleep between battery checks.
+    #
     sleep_time=60
+
     date=$(date)
-    percent=$(tlp-stat -b | grep Charge | awk '{print $3}' | cut -d '.' -f 1)
+    percent=$(tlp-stat -b | grep ^Charge | awk '{print $3}' | cut -d '.' -f 1)
 
     #
     # Get status.
