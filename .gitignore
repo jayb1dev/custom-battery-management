@@ -1,0 +1,11 @@
+#
+# Ignore generated files.
+#
+
+battery
+battery.c
+battery.err.log
+battery.out.log
+custom-battery-management.service
+
+
