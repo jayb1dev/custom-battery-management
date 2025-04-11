@@ -39,6 +39,7 @@ TODO add hardware info here
 
 > See: https://askubuntu.com/questions/1534116/ubuntu-24-04-and-tlp
 
+> You can uninstall PPD with `sudo apt remove --purge power-profiles-daemon`
 
 ```
 sudo apt install tlp
